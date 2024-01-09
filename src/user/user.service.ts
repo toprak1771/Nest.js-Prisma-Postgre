@@ -13,8 +13,17 @@ export class UserService {
   }
 
   public register(user: CreateUserDto) {
+    console.log("user:",user);
     return prisma.user.create({
       data: user,
+    })
+  }
+
+  public async findOne(email:string) : Promise<any>{
+    return await prisma.user.findUnique({
+      where:{
+        email:email
+      }
     })
   }
 }
