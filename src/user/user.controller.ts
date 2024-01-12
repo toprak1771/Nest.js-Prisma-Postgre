@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Post, Res, HttpStatus } from '@nestjs/common'
+import { Body, Controller, Get, Post, Res, HttpStatus,UseGuards } from '@nestjs/common'
 import { Response } from 'express'
 import { UserService } from './user.service'
 import { CreateUserDto } from './userDto/create_user_dto'
 import { LoginUserDto } from './userDto/login_user_dto'
 import * as bcrypt from 'bcrypt'
 import { JwtService } from '@nestjs/jwt'
+import { AuthGuard } from 'src/utils/auth.guard'
 
 @Controller('user')
 export class UserController {
@@ -12,16 +13,7 @@ export class UserController {
     private readonly userService: UserService,
     private jwtService: JwtService,
   ) {}
-  @Get()
-  getHello(): string {
-    return this.userService.getHello()
-  }
-
-  @Get('Custom')
-  getCustomMessage(): string {
-    return this.userService.getCustomMessage()
-  }
-
+ 
   @Post()
   public async registerUser(@Body() user: CreateUserDto, @Res() res: Response) {
     try {
@@ -70,4 +62,24 @@ export class UserController {
       })
     }
   }
+
+  @Get()
+  @UseGuards(AuthGuard)
+  public async getAllUsers(@Res() res:Response):Promise<object> {
+    try {
+      const users = await this.userService.getAll();
+      console.log("users:",users);
+      return res.status(HttpStatus.CREATED).json({
+        status: 'success',
+        users:users,
+      })
+    } catch (error) {
+      console.log('error:', error)
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        status: 'error',
+        error: error.message,
+      })
+    }
+  }
+
 }
