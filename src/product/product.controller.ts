@@ -17,7 +17,7 @@ export class ProductController {
     @Req() req: Request,
     @Body() product: CreateProductDto,
     @Res() res: Response,
-  ): Promise<any> {
+  ): Promise<object> {
     try {
       product.userId = req['user'].Id
       const _product = await this.productService.add(product)

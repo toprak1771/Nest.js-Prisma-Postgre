@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { CreateUserDto } from './userDto/create_user_dto'
+import { CreateOrderDto } from './userDto/create_order_dto'
 import prisma from 'src/utils/prisma'
-import { User } from '@prisma/client'
+import { Order, User } from '@prisma/client'
 
 @Injectable()
 export class UserService {
@@ -28,11 +29,43 @@ export class UserService {
     })
   }
 
-  public getAll() : Promise<User[]>{
+  public getAll(): Promise<User[]> {
     return prisma.user.findMany({
-      include:{
-        products:true
-      }
+      include: {
+        products: true,
+      },
+    })
+  }
+
+  public order(order: CreateOrderDto[], userId: number) {
+    return prisma.order.create({
+      data: {
+        userId: userId,
+        ordersProducts: {
+          create: order.map((_order) => ({
+            createdAt: new Date(),
+            quantity: _order.quantity,
+            product: {
+              connect: {
+                id: _order.productId,
+              },
+            },
+          })),
+        },
+      },
+    })
+  }
+
+  public getOrder():Promise<Order[]> {
+    return prisma.order.findMany({
+      include: {
+        user: true,
+        ordersProducts: {
+          include: {
+            product: true,
+          },
+        },
+      },
     })
   }
 }
