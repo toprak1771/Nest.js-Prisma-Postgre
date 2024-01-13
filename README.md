@@ -1,4 +1,4 @@
-Proje Nest.js - Prisma _ Postgres kullanılarak oluşturulmuştur.
+Proje Nest.js - Prisma - Postgres kullanılarak oluşturulmuştur.
 -------------------------------------------------------------------------
 
 Talimatlar:
